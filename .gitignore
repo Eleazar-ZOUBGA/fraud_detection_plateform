@@ -1,0 +1,80 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+.env
+*.env
+
+# Jupyter Notebooks & Checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Data & Datasets (Ne jamais pusher les volumineux datasets CSV/Parquet)
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.feather
+*.zip
+*.tar.gz
+
+# Machine Learning Artifacts & MLflow
+mlruns/
+mlruns_data/
+*.pkl
+*.joblib
+*.onnx
+*.h5
+*.pth
+
+# Testing & Coverage (Pytest)
+.pytest_cache/
+.coverage
+htmlcov/
+.pytest_cache
+
+# IDEs & Editors (VS Code, Cursor, PyCharm)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker / Database local persistence
+postgres_data/
+*.sqlite3
+*.db
+
+# Logs & Operating System
+*.log
+.DS_Store
+Thumbs.db
+
+# Documentation
+documentation/
