@@ -1,0 +1,30 @@
+# Data
+pandas
+numpy
+scikit-learn
+
+# Machine Learning
+xgboost
+lightgbm
+
+# API
+fastapi
+uvicorn[standard]
+pydantic
+
+# Database
+sqlalchemy
+psycopg2-binary
+
+# MLOps
+mlflow
+
+# Testing
+pytest
+httpx
+
+# Code quality
+ruff
+
+# Data acquisition
+kaggle

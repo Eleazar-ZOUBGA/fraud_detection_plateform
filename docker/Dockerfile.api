@@ -1,0 +1,27 @@
+FROM python:3.10-slim
+
+# Évite la création de fichiers .pyc et force l'affichage direct des logs
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /app
+
+# System dependencies pour psycopg2 et compilation
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installation des dépendances Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copie du code source
+COPY . .
+
+# Exposer le port de l'API
+EXPOSE 8000
+
+# Commande de lancement FastAPI (uvicorn)
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
