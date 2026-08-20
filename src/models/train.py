@@ -170,9 +170,13 @@ def train_xgboost():
         mlflow.log_metric("fn", float(cm[1, 0]))
         mlflow.log_metric("tp", float(cm[1, 1]))
 
-        # Log model artifact
-        mlflow.xgboost.log_model(xgb_model=model, artifact_path="model")
-        logging.info("XGBoost training completed and logged to MLflow successfully.")
+        # Log model artifact with registration inside the run
+        result = mlflow.xgboost.log_model(
+            xgb_model=model, 
+            artifact_path="model",
+            registered_model_name="FraudDetectionModel"
+        )
+        logging.info("XGBoost training completed and registered in MLflow Model Registry.")
 
 if __name__ == "__main__":
     train_baseline()
