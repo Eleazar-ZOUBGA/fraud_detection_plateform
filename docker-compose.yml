@@ -1,5 +1,5 @@
 services:
-  # 1. Base de données PostgreSQL pour les données applicatives et le backend store MLflow
+  # 1. Base de données PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: fraud_postgres
@@ -41,11 +41,11 @@ services:
     volumes:
       - mlflow_artifacts:/mlflow/artifacts
 
-  # 3. Backend API FastAPI
+  # 3. Backend API FastAPI & Pipelines Data
   api:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile.api
+      context: .
+      dockerfile: Dockerfile.api
     container_name: fraud_api
     ports:
       - "8000:8000"
@@ -53,8 +53,12 @@ services:
       - DATABASE_URL=postgresql://fraud_user:fraud_password@postgres:5432/fraud_db
       - MLFLOW_TRACKING_URI=http://mlflow:5000
     volumes:
-      - ../src:/app/src
-      - ../data:/app/data
+      - ./src:/app/src
+      - ./data:/app/data
+    command: >
+      sh -c "python src/data/pipeline.py &&
+             python src/data/feature_engineering.py &&
+             uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload"
     depends_on:
       postgres:
         condition: service_healthy
