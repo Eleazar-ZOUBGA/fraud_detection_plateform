@@ -5,6 +5,8 @@ import numpy as np
 import mlflow
 import mlflow.sklearn
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.metrics import (
     precision_recall_curve,
     auc,
@@ -94,6 +96,85 @@ def train_baseline():
         mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
         logging.info("Baseline model training completed and logged to MLflow successfully.")
 
+def train_random_forest():
+    """Train Random Forest model and log metrics to MLflow."""
+    X_train, y_train, X_val, y_val = load_processed_data()
+
+    params = {
+        "n_estimators": 100,
+        "max_depth": 10,
+        "class_weight": "balanced",
+        "random_state": 42,
+        "n_jobs": -1,
+    }
+
+    with mlflow.start_run(run_name="random_forest_balanced"):
+        logging.info("Training Random Forest model...")
+        model = RandomForestClassifier(**params)
+        model.fit(X_train, y_train)
+
+        # Log parameters
+        mlflow.log_params(params)
+
+        # Evaluate model
+        metrics, cm = evaluate_model(model, X_val, y_val)
+        logging.info(f"Validation Metrics -> PR-AUC: {metrics['pr_auc']:.4f}, Recall: {metrics['recall']:.4f}, Precision: {metrics['precision']:.4f}")
+
+        # Log metrics
+        mlflow.log_metrics(metrics)
+
+        # Log confusion matrix values
+        mlflow.log_metric("tn", float(cm[0, 0]))
+        mlflow.log_metric("fp", float(cm[0, 1]))
+        mlflow.log_metric("fn", float(cm[1, 0]))
+        mlflow.log_metric("tp", float(cm[1, 1]))
+
+        # Log model artifact
+        mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
+        logging.info("Random Forest training completed and logged to MLflow successfully.")
+
+def train_xgboost():
+    """Train XGBoost model with scale_pos_weight for class imbalance and log to MLflow."""
+    X_train, y_train, X_val, y_val = load_processed_data()
+
+    # Calculate scale_pos_weight (ratio of negative to positive samples)
+    ratio = (len(y_train) - sum(y_train)) / sum(y_train)
+
+    params = {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "scale_pos_weight": ratio,
+        "random_state": 42,
+        "eval_metric": "logloss",
+    }
+
+    with mlflow.start_run(run_name="xgboost_scaled"):
+        logging.info("Training XGBoost model...")
+        model = XGBClassifier(**params)
+        model.fit(X_train, y_train)
+
+        # Log parameters
+        mlflow.log_params(params)
+
+        # Evaluate model
+        metrics, cm = evaluate_model(model, X_val, y_val)
+        logging.info(f"Validation Metrics -> PR-AUC: {metrics['pr_auc']:.4f}, Recall: {metrics['recall']:.4f}, Precision: {metrics['precision']:.4f}")
+
+        # Log metrics
+        mlflow.log_metrics(metrics)
+
+        # Log confusion matrix values
+        mlflow.log_metric("tn", float(cm[0, 0]))
+        mlflow.log_metric("fp", float(cm[0, 1]))
+        mlflow.log_metric("fn", float(cm[1, 0]))
+        mlflow.log_metric("tp", float(cm[1, 1]))
+
+        # Log model artifact
+        mlflow.xgboost.log_model(xgb_model=model, artifact_path="model")
+        logging.info("XGBoost training completed and logged to MLflow successfully.")
 
 if __name__ == "__main__":
     train_baseline()
+    train_random_forest()
+    train_xgboost()

@@ -6,6 +6,7 @@ scikit-learn
 # Machine Learning
 xgboost
 lightgbm
+imbalanced-learn
 
 # API
 fastapi
