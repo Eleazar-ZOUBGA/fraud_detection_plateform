@@ -55,6 +55,7 @@ services:
     volumes:
       - ./src:/app/src
       - ./data:/app/data
+      - ./tests:/app/tests
     command: >
       sh -c "python src/data/pipeline.py &&
              python src/data/feature_engineering.py &&
